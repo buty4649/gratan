@@ -36,6 +36,8 @@ ARGV.options do |opt|
     opt.on(''  , '--username USERNAME')    {|v| mysql_options[:username]       = v             }
     opt.on(''  , '--password PASSWORD')    {|v| mysql_options[:password]       = v             }
     opt.on(''  , '--database DATABASE')    {|v| mysql_options[:database]       = v             }
+    opt.on(''  , '--default-file FILE')    {|v| mysql_options[:default_file]   = v             }
+    opt.on(''  , '--default-group GROUP')  {|v| mysql_options[:default_group]  = v             }
     opt.on('-a', '--apply')                {    mode                           = :apply        }
     opt.on('-f', '--file FILE')            {|v| file                           = v             }
     opt.on(''  , '--dry-run')              {    options[:dry_run]              = true          }
