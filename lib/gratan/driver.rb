@@ -75,7 +75,7 @@ class Gratan::Driver
   end
 
   def drop_user(user, host)
-    sql = "DROP USER #{quote_user(user, host)}"
+    sql = "DELETE FROM mysql.user where user='#{user}' and host='#{host}'"
     delete(sql)
   end
 
