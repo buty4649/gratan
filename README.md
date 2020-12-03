@@ -5,13 +5,14 @@ Gratan is a tool to manage MySQL permissions.
 It defines the state of MySQL permissions using Ruby DSL, and updates permissions according to DSL.
 
 [![Gem Version](https://badge.fury.io/rb/gratan.svg)](http://badge.fury.io/rb/gratan)
-[![Build Status](https://travis-ci.org/winebarrel/gratan.svg?branch=master)](https://travis-ci.org/winebarrel/gratan)
-[![Coverage Status](https://coveralls.io/repos/winebarrel/gratan/badge.svg?branch=master)](https://coveralls.io/r/winebarrel/gratan?branch=master)
+[![Build Status](https://travis-ci.org/codenize-tools/gratan.svg?branch=master)](https://travis-ci.org/codenize-tools/gratan)
 
 ## Notice
 
 * `>= 0.3.0`
   * Support template
+* `>= 0.3.1`
+  * Fix `<secret>` password
 
 ## Installation
 
@@ -61,7 +62,10 @@ Usage: gratan [options]
         --ignore-object REGEXP
         --enable-expired
         --ignore-not-exist
+        --ignore-password-secret
         --skip-disable-log-bin
+        --override-sql-mode
+        --use-show-create-user
         --no-color
         --debug
         --auto-identify OUTPUT
@@ -69,6 +73,14 @@ Usage: gratan [options]
         --mysql2-options JSON
     -h, --help
 ```
+
+A default connection to a database can be established by setting the following environment variables:
+- `GRATAN_DB_HOST`: database host
+- `GRATAN_DB_PORT`: database port
+- `GRATAN_DB_SOCKET`: database socket
+- `GRATAN_DB_DATABASE`: database database name
+- `GRATAN_DB_USERNAME`: database user
+- `GRATAN_DB_PASSWORD`: database password
 
 ## Grantfile example
 
@@ -123,6 +135,15 @@ user 'scott', 'localhost', identified: 'tiger' do
     include_template 'test db template', extra: ['INSERT', 'UPDATE']
   end
 end
+```
+
+## Run tests
+
+```sh
+bundle install
+docker-compose up -d
+bundle exec rake
+# MYSQL57=1 bundle exec rake
 ```
 
 ## Similar tools
