@@ -20,12 +20,21 @@ class Gratan::Driver
     end
   end
 
+  def show_create_user(user, host)
+    query("SHOW CREATE USER #{quote_user(user, host)}").first.values.first
+  end
+
   def show_databases
     query("SHOW DATABASES").map {|i| i.values.first }
   end
 
   def show_tables(database)
     query("SHOW TABLES FROM `#{database}`").map {|i| i.values.first }
+  rescue Mysql2::Error => e
+    raise e if e.error_number != 1102
+
+    log(:debug, e.message)
+    []
   end
 
   def show_all_tables
@@ -108,6 +117,25 @@ class Gratan::Driver
     ]
 
     update(sql)
+
+    if (identifier || '').empty?
+      set_password(user, host, identifier)
+    end
+  end
+
+  def set_password(user, host, password, options = {})
+    password ||= ''
+
+    unless options[:hash]
+      password = "PASSWORD('#{escape(password)}')"
+    end
+
+    sql = 'SET PASSWORD FOR %s = %s' % [
+      quote_user(user, host),
+      password,
+    ]
+
+    update(sql)
   end
 
   def set_require(user, host, required)
@@ -178,6 +206,18 @@ class Gratan::Driver
   def disable_log_bin_local
     unless @options[:skip_disable_log_bin]
       query('SET SQL_LOG_BIN = 0')
+    end
+  end
+
+  def override_sql_mode
+    if @options[:override_sql_mode]
+      query('SET SQL_MODE = ""')
+    end
+  end
+
+  def set_wait_timeout
+    if @options[:wait_timeout]
+      query("SET @@wait_timeout = #{@options[:wait_timeout]}")
     end
   end
 
